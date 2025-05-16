@@ -4,12 +4,11 @@ import useTasks from "@/hooks/useTasks";
 import { Location } from "@/types/location";
 import { Task } from "@/types/task";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LocationDetail() {
-  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getLocationById } = useLocations();
   const { getTasksByLocationId } = useTasks();

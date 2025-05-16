@@ -9,6 +9,15 @@ export default function useTasks() {
     return await db.getAllAsync<Task>("SELECT * FROM tasks", []);
   }, [db]);
 
+  const getTaskById = useCallback(
+    async (id: string | number) => {
+      return await db.getFirstAsync<Task>("SELECT * FROM tasks WHERE id = ?", [
+        id,
+      ]);
+    },
+    [db]
+  );
+
   const getTasksByLocationId = useCallback(
     async (locationId: string) => {
       return await db.getAllAsync<Task>(
@@ -19,5 +28,5 @@ export default function useTasks() {
     [db]
   );
 
-  return { getAllTasks, getTasksByLocationId };
+  return { getAllTasks, getTaskById, getTasksByLocationId };
 }

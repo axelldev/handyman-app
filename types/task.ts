@@ -6,3 +6,5 @@ export interface Task {
   locationId: number;
   imageUri: string | null;
 }
+
+export type TaskFormValues = Omit<Task, "id" | "locationId">;
