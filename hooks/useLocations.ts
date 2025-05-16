@@ -29,8 +29,19 @@ export default function useLocations() {
     [db]
   );
 
+  const getLocationById = useCallback(
+    async (id: number | string) => {
+      return await db.getFirstAsync<Location>(
+        "SELECT * FROM locations WHERE id = ?",
+        id
+      );
+    },
+    [db]
+  );
+
   return {
     getLocations,
+    getLocationById,
     addLocation,
     deleteLocation,
   };

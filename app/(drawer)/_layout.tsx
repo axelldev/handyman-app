@@ -20,8 +20,9 @@ export default function DrawerLayout() {
       >
         <Drawer.Screen name="index" options={{ title: "Manage Locations" }} />
         <Drawer.Screen
-          name="locations/[id]"
+          name="locations"
           options={{
+            headerShown: false,
             drawerItemStyle: {
               display: "none",
             },

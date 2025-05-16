@@ -8,7 +8,7 @@ import {
   DrawerItemList,
   useDrawerStatus,
 } from "@react-navigation/drawer";
-import { router, usePathname } from "expo-router";
+import { Href, router, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -46,12 +46,13 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           }}
         >
           {locations.map((location) => {
-            const isActive = pathname === `/locations/${location.id}`;
+            const path: Href = `/locations/${location.id}`;
+            const isActive = pathname === path;
             return (
               <DrawerItem
                 key={location.id}
                 label={location.name}
-                onPress={() => router.push(`/locations/${location.id}`)}
+                onPress={() => router.navigate(path)}
                 focused={isActive}
                 {...props}
               />
