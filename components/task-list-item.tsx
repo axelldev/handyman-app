@@ -10,7 +10,7 @@ interface TaskListItemProps {
 export const TaskListItem = ({ task }: TaskListItemProps) => {
   return (
     <Link
-      href={`/locations/${task.locationId}/new-task?taskId=${task.id}`}
+      href={`/locations/${task.locationId}/task-detail?taskId=${task.id}`}
       asChild
     >
       <TouchableOpacity>

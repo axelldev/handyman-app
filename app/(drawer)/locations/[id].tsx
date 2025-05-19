@@ -4,8 +4,8 @@ import useTasks from "@/hooks/useTasks";
 import { Location } from "@/types/location";
 import { Task } from "@/types/task";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { Link, Stack, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LocationDetail() {
@@ -27,9 +27,9 @@ export default function LocationDetail() {
     }
   }, [getLocationById, getTasksByLocationId, id]);
 
-  useEffect(() => {
+  useFocusEffect(() => {
     loadLocation();
-  }, [loadLocation]);
+  });
 
   return (
     <View style={styles.container}>
@@ -38,7 +38,7 @@ export default function LocationDetail() {
         data={tasks}
         renderItem={({ item: task }) => <TaskListItem task={task} />}
       />
-      <Link href={`/locations/${id}/new-task`} asChild>
+      <Link href={`/locations/${id}/task-detail`} asChild>
         <TouchableOpacity style={styles.fabAddTask}>
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>

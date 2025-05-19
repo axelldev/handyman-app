@@ -1,6 +1,9 @@
-import { TaskFormValues } from "@/types/task";
+import { Task, TaskFormValues } from "@/types/task";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import {
+  Image,
   StyleSheet,
   Switch,
   Text,
@@ -10,7 +13,7 @@ import {
 } from "react-native";
 
 interface TaskFormProps {
-  initialValues?: TaskFormValues;
+  task?: Task | null;
   submitButtonLabel?: string;
   onSubmit: (values: TaskFormValues) => void;
 }
@@ -67,14 +70,21 @@ const isValidForm = (form: TaskFormValues) => {
 };
 
 export const TaskForm = ({
-  initialValues,
+  task,
   submitButtonLabel = "Create Task",
   onSubmit,
 }: TaskFormProps) => {
-  const [form, setForm] = useState<TaskFormValues>(
-    initialValues || initialForm
-  );
+  const [form, setForm] = useState<TaskFormValues>(initialForm);
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
+
+  useEffect(() => {
+    if (task) {
+      setForm({
+        ...task,
+        isUrgent: Boolean(task.isUrgent),
+      });
+    }
+  }, [task]);
 
   useEffect(() => {
     if (form !== initialForm) {
@@ -94,7 +104,22 @@ export const TaskForm = ({
     }
   };
 
-  const handleChange = (key: keyof TaskFormValues, value: string) => {
+  const handlePickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (result.canceled) return;
+    setForm({
+      ...form,
+      imageUri: result.assets[0]?.uri,
+    });
+  };
+
+  const handleChange = (key: keyof TaskFormValues, value: string | boolean) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -113,21 +138,25 @@ export const TaskForm = ({
         value={form.description}
         autoCorrect={false}
         onChangeText={(text) => handleChange("description", text)}
+        numberOfLines={4}
+        multiline
         style={styles.textInput}
       />
       {errors.description && <FormError error={errors.description} />}
       <Switch
         value={form.isUrgent}
-        onValueChange={(value) => handleChange("isUrgent", value.toString())}
+        onValueChange={(value) => handleChange("isUrgent", value)}
         style={styles.switch}
       />
-      <TextInput
-        placeholder="Image URI"
-        value={form.imageUri || ""}
-        autoCorrect={false}
-        onChangeText={(text) => handleChange("imageUri", text)}
-        style={styles.textInput}
-      />
+      <TouchableOpacity onPress={handlePickImage}>
+        <View style={styles.imagePicker}>
+          <Ionicons name="image" size={24} color="#fff" />
+          <Text style={styles.imagePickerText}>Pick Image</Text>
+        </View>
+      </TouchableOpacity>
+      {form.imageUri && (
+        <Image source={{ uri: form.imageUri }} style={styles.image} />
+      )}
       {errors.imageUri && <FormError error={errors.imageUri} />}
       <TouchableOpacity onPress={handleSubmit} style={styles.button}>
         <Text style={styles.buttonText}>{submitButtonLabel}</Text>
@@ -163,5 +192,27 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  imagePicker: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#5552A5",
+    padding: 16,
+    borderRadius: 4,
+    marginBottom: 16,
+    justifyContent: "center",
+  },
+  imagePickerText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 4,
+    marginBottom: 16,
+    resizeMode: "cover",
   },
 });

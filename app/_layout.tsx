@@ -1,12 +1,41 @@
 import { DB_NAME, DB_VERSION } from "@/configs/db";
-import { Slot } from "expo-router";
+import * as Notifications from "expo-notifications";
+import { Slot, useRouter } from "expo-router";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import { Suspense, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 
 export default function RootLayout() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (resp) => {
+        const data = resp.notification.request.content.data;
+        const locationId = data?.locationId;
+        const taskId = data?.taskId;
+
+        console.log({ locationId, taskId });
+        if (locationId && taskId) {
+          router.navigate(
+            `/locations/${locationId}/task-detail?taskId=${taskId}`
+          );
+        }
+      }
+    );
+    return () => subscription.remove();
+  }, [router]);
+
   return (
-    <SQLiteProvider databaseName={DB_NAME} onInit={migrateDatabase}>
-      <Slot />
-    </SQLiteProvider>
+    <Suspense fallback={<ActivityIndicator />}>
+      <SQLiteProvider
+        useSuspense
+        databaseName={DB_NAME}
+        onInit={migrateDatabase}
+      >
+        <Slot />
+      </SQLiteProvider>
+    </Suspense>
   );
 }
 
